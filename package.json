@@ -1,0 +1,28 @@
+{
+  "name": "mofron-comp-accordion",
+  "version": "0.0.1",
+  "description": "Accordion Component for mofron",
+  "main": "dist/accordion.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simpart/mofron-comp-accordion.git"
+  },
+  "keywords": [
+    "mofron"
+  ],
+  "author": "simparts",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/simpart/mofron-comp-accordion/issues"
+  },
+  "homepage": "https://github.com/simpart/mofron-comp-accordion#readme",
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "webpack": "^1.14.0"
+  }
+}
