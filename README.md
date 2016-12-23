@@ -1,2 +1,2 @@
-# mofron-parts-accordion
+# mofron-comp-accordion
 accordion component for mofron
