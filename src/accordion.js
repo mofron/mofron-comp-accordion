@@ -39,9 +39,12 @@ mofron.comp.Accordion = class extends mofron.Component {
         }
     }
     
-    setChangeEvt (fnc) {
+    changeEvent (fnc) {
         try {
-            if (null === fnc) {
+            if (undefined === fnc) {
+                return this.chg_evt;
+            }
+            if ('function' !== (typeof fnc)) {
                 throw new Error('invalid parameter');
             }
             this.chg_evt = fnc;
@@ -51,7 +54,7 @@ mofron.comp.Accordion = class extends mofron.Component {
         }
     }
     
-    add (ttl,cnt) {
+    add (ttl, cnt) {
         try {
             if ( (undefined === cnt) ||
                  (null      === cnt) ||
@@ -71,7 +74,14 @@ mofron.comp.Accordion = class extends mofron.Component {
                     var acd_obj = clk_prm[0];
                     var conts   = clk_prm[1];
                     var idx     = clk_prm[2];
+                    
+                    /* switch display contents */
                     conts.visible(!(acd_obj.state(idx)));
+                    
+                    var evt = acd_obj.changeEvent();
+                    if (null !== evt) {
+                        evt(acd_obj,idx);
+                    }
                 } catch (e) {
                     console.error(e.stack);
                     throw e;
@@ -91,7 +101,7 @@ mofron.comp.Accordion = class extends mofron.Component {
     
     remove (idx) {
         try {
-            
+            this.getChild(idx).visible(false);
         } catch (e) {
             console.error(e.stack);
             throw e;
