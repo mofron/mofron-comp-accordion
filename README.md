@@ -36,7 +36,8 @@ acd.visible(true);
 
 | Method            | Parameter                                                                    |    Description                  |
 |:------------------|:-----------------------------------------------------------------|:-------------------------------|
-| add               | string : header title<br>           | button color getter/setter. <br>(for getter, do not specify parameters)  |
-| changeEvent       | function : function for click event listener<br>mixed : function parameter (option)       |set button click event |
-| add               | object : color                                               | button color getter/setter. <br>(for getter, do not specify parameters)  |
+| add                   | string : header title<br>object : Component           | add contents  |
+| remove             | number : contents index                                           | disabled target contents  |
+| changeEvent   | function : function for change event  |set change event function |
+| state                 | number : contents index                                               | state of target contents <br>  true : target contents is open<br>  false : target contents is closed|
 
