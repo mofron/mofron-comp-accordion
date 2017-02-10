@@ -12,7 +12,6 @@ mofron.comp.Accordion = class extends mofron.Component {
     constructor (prm,opt) {
         try {
             super(prm);
-            this.setBaseName('Accordion');
             this.name('Accordion');
             
             this.chg_evt = null;

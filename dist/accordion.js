@@ -76,7 +76,6 @@ require('mofron-event-click');
 	        try {
 	            var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, prm));
 
-	            _this.setBaseName('Accordion');
 	            _this.name('Accordion');
 
 	            _this.chg_evt = null;
