@@ -2,10 +2,12 @@
  * @file accordion.js
  * @author simpart
  */
+require('mofron-comp-heading');
+require('mofron-event-click');
 
 /**
- * @class mofron.comp.Accordion
- * @brief Accordion Component class
+ * @class comp.Accordion
+ * @brief accordion component for mofron
  */
 mofron.comp.Accordion = class extends mofron.Component {
     
