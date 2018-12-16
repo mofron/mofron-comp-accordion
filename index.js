@@ -1,26 +1,27 @@
 /**
- * @file accordion.js
+ * @file   mofron-comp-accordion/index.js
+ * @brief  accordion component for mofron
  * @author simpart
  */
-require('mofron-comp-heading');
-require('mofron-event-click');
+const mf     = require('mofron');
+const Text   = require('mofron-comp-text');
+const Switch = require('mofron-comp-switch');
+const Horiz  = require('mofron-layout-horizon');
+const Click  = require('mofron-event-click');
+const VisClk = require('mofron-event-visiclick');
 
 /**
  * @class comp.Accordion
  * @brief accordion component for mofron
  */
-mofron.comp.Accordion = class extends mofron.Component {
+mf.comp.Accordion = class extends mf.Component {
     
-    constructor (prm,opt) {
+    constructor (po, p2) {
         try {
-            super(prm);
+            super();
             this.name('Accordion');
-            
-            this.chg_evt = null;
-            
-            if (null !== opt) {
-                this.option(opt);
-            }
+            this.prmMap(['headComp', 'child']);
+            this.prmOpt(po, p2);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -30,104 +31,122 @@ mofron.comp.Accordion = class extends mofron.Component {
     /**
      * initialize DOM contents
      * 
-     * @param vd : (mofron.util.Vdom) vdom object
+     * @note private method
      */
-    initDomConts (prm) {
+    initDomConts () {
         try {
-            this.target(this.vdom());
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    changeEvent (fnc) {
-        try {
-            if (undefined === fnc) {
-                return this.chg_evt;
-            }
-            if ('function' !== (typeof fnc)) {
-                throw new Error('invalid parameter');
-            }
-            this.chg_evt = fnc;
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    add (ttl, cnt) {
-        try {
-            if ( (undefined === cnt) ||
-                 (null      === cnt) ||
-                 ('object'  !== (typeof cnt)) ) {
-                throw new Error('invalid parameter');
-            }
+            super.initDomConts();
             
-            var hdg_thm = this.theme().getComp('Heading');
-            if (null === hdg_thm) {
-                hdg_thm = mofron.comp.Heading;
-            }
-            var hdg = new hdg_thm(ttl,{
-                          level : 2
-                      });
-            hdg.addEvent(new mofron.event.Click(function(clk_prm) {
+            /* init status component */
+            let sts = new Switch([
+                new Text('-'),
+                new Text('+')
+            ]);
+            this.stsComp(sts);
+            
+            /* init index component */
+            let conts   = new mf.Component();
+            let clk_swh = (clk1_cmp, clk2, clk3_prm) => {
                 try {
-                    var acd_obj = clk_prm[0];
-                    var conts   = clk_prm[1];
-                    var idx     = clk_prm[2];
-                    
-                    /* switch display contents */
-                    conts.visible(!(acd_obj.state(idx)));
-                    
-                    var evt = acd_obj.changeEvent();
-                    if (null !== evt) {
-                        evt(acd_obj,idx);
-                    }
+                    /* change open status */
+                    clk3_prm.isOpen(!clk3_prm.isOpen());
+                    sts.swComp();
                 } catch (e) {
                     console.error(e.stack);
                     throw e;
                 }
-            },[this,cnt,this.getChild().length]));
+            }
+            let idx = new mf.Component({
+                layout : [ new Horiz() ],
+                event  : [
+                    new Click([clk_swh, this]),
+                    new VisClk('switch', conts)
+                ],
+                child  : [ this.stsComp(), this.headComp() ]
+            });
+            this.child([idx, conts]);
             
-            var wrp = new mofron.Component();
-            wrp.addChild(hdg);
-            wrp.addChild(cnt, false);
-            
-            this.addChild(wrp);
+            this.target(conts.target());
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    remove (idx) {
+    /**
+     * status component setter/getter
+     *
+     * @param p1 (Component) set status component
+     * @param p1 (undefined) call as getter
+     * @return (Component) status component
+     */
+    stsComp (prm) {
+        try { return this.innerComp('stsComp', prm, mf.Component); } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * head component setter/getter
+     *
+     * @param p1 (Component) set head component
+     * @param p1 (undefined) call as getter
+     * @return (Component) head component
+     */
+    headComp (prm) {
         try {
-            this.getChild(idx).visible(false);
+            let ret = this.innerComp('headComp', prm, mf.Component);
+            if (undefined !== prm) {
+                prm.sizeValue('margin-left', '0.1rem');
+            }
+            return ret;
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    state (idx) {
+    /**
+     * change event function setter/getter
+     *
+     * @param p1 (function) change event function
+     * @param p1 (undefined) call as getter
+     * @param p2 (mixed) function parameter
+     * @return (array) [function, parameter]
+     */
+    changeEvent (fnc, prm) {
         try {
-            if ('number' !== typeof idx) {
+            if ( (undefined !== fnc) && ('function' === typeof fnc) ) {
                 throw new Error('invalid parameter');
             }
-            var chdlen = this.getChild();
-            if ((chdlen.length <= idx) || (0 > idx)) {
-                throw new Error('invalid parameter');
-            }
-            
-            if (false === chdlen[idx].isRendered()) {
-                return false;
-            }
-            var disp = chdlen[idx].getChild(1).vdom().style('display');
-            if ('none' === disp) {
-                return false;
-            } else {
-                return true;
+            return this.arrayMember(
+                'changeEvent',
+                'array',
+                (undefined === prm) ? undefined : [fnc, prm]
+            );
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * open status setter/getter
+     *
+     * @param p1 (boolean) set open status
+     * @param p1 (undefined) call as getter
+     * @return (boolean) open status
+     */
+    isOpen (prm) {
+        try {
+            let ret = this.member('isOpen', 'boolean', prm, true);
+            if (undefined !== prm) {
+                /* execute change event */
+                let evt = this.changeEvent();
+                for (let eidx in evt) {
+                    evt[eidx][0](this, prm, evt[eidx][1]);
+                }
             }
         } catch (e) {
             console.error(e.stack);
@@ -135,3 +154,5 @@ mofron.comp.Accordion = class extends mofron.Component {
         }
     }
 }
+module.exports = mf.comp.Accordion;
+/* end of file */

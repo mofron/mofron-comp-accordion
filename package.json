@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-accordion",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "accordion component for mofron",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simpart/mofron-comp-accordion.git"
+  },
+  "dependencies": {
+    "mofron-comp-text" : "",
+    "mofron-comp-switch" : "",
+    "mofron-layout-horizon" : "",
+    "mofron-event-click" : "",
+    "mofron-event-visiclick" : ""
   },
   "keywords": [
     "mofron"
