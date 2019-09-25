@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-accordion",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "accordion component for mofron",
   "main": "index.js",
   "scripts": {
@@ -8,24 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simpart/mofron-comp-accordion.git"
+    "url": "git+https://github.com/mofron/mofron-comp-accordion.git"
   },
   "dependencies": {
-    "mofron-comp-text" : "",
-    "mofron-comp-switch" : "",
-    "mofron-layout-horizon" : "",
-    "mofron-event-click" : "",
-    "mofron-event-visiclick" : ""
   },
   "keywords": [
-    "mofron"
+    "front-end"
   ],
   "author": "simparts",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/simpart/mofron-comp-accordion/issues"
+    "url": "https://github.com/mofron/mofron-comp-accordion/issues"
   },
-  "homepage": "https://github.com/simpart/mofron-comp-accordion#readme",
+  "homepage": "https://github.com/mofron/mofron-comp-accordion#readme",
   "devDependencies": {
   }
 }

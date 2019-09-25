@@ -4,24 +4,26 @@
  * @author simpart
  */
 const mf     = require('mofron');
-const Text   = require('mofron-comp-text');
-const Switch = require('mofron-comp-switch');
-const Horiz  = require('mofron-layout-horizon');
+const Text   = require('mofron-comp-clktext');
+const Switch = require('mofron-comp-clksw');
 const Click  = require('mofron-event-click');
-const VisClk = require('mofron-event-visiclick');
+const efSize = require('mofron-effect-size');
 
-/**
- * @class comp.Accordion
- * @brief accordion component for mofron
- */
 mf.comp.Accordion = class extends mf.Component {
-    
-    constructor (po, p2) {
+    /**
+     * initialize component
+     * 
+     * @param (mixed) title parameter
+     *                object: component option
+     * @pmap title
+     * @type private
+     */
+    constructor (po) {
         try {
             super();
             this.name('Accordion');
-            this.prmMap(['headComp', 'child']);
-            this.prmOpt(po, p2);
+            this.prmMap('title');
+            this.prmOpt(po);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -29,44 +31,20 @@ mf.comp.Accordion = class extends mf.Component {
     }
     
     /**
-     * initialize DOM contents
+     * initialize dom contents
      * 
-     * @note private method
+     * @type private
      */
     initDomConts () {
         try {
             super.initDomConts();
+            this.title("");
+
+            this.child([this.title(), this.contents()]);
+            this.target(this.contents().target());
+            this.styleTgt(this.target());
             
-            /* init status component */
-            let sts = new Switch([
-                new Text('-'),
-                new Text('+')
-            ]);
-            this.stsComp(sts);
-            
-            /* init index component */
-            let conts   = new mf.Component();
-            let clk_swh = (clk1_cmp, clk2, clk3_prm) => {
-                try {
-                    /* change open status */
-                    clk3_prm.isOpen(!clk3_prm.isOpen());
-                    sts.swComp();
-                } catch (e) {
-                    console.error(e.stack);
-                    throw e;
-                }
-            }
-            let idx = new mf.Component({
-                layout : [ new Horiz() ],
-                event  : [
-                    new Click([clk_swh, this]),
-                    new VisClk('switch', conts)
-                ],
-                child  : [ this.stsComp(), this.headComp() ]
-            });
-            this.child([idx, conts]);
-            
-            this.target(conts.target());
+	    this.height("2rem");
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -74,80 +52,174 @@ mf.comp.Accordion = class extends mf.Component {
     }
     
     /**
-     * status component setter/getter
-     *
-     * @param p1 (Component) set status component
-     * @param p1 (undefined) call as getter
-     * @return (Component) status component
+     * accordion title
+     * 
+     * @param (component) title component
+     * @return (component) title component
+     * @type parameter
      */
-    stsComp (prm) {
-        try { return this.innerComp('stsComp', prm, mf.Component); } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * head component setter/getter
-     *
-     * @param p1 (Component) set head component
-     * @param p1 (undefined) call as getter
-     * @return (Component) head component
-     */
-    headComp (prm) {
+    title (prm) {
         try {
-            let ret = this.innerComp('headComp', prm, mf.Component);
-            if (undefined !== prm) {
-                prm.sizeValue('margin-left', '0.1rem');
-            }
-            return ret;
-        } catch (e) {
+	    if (undefined === prm) {
+                /* getter */
+		return this.innerComp("title");
+	    }
+	    /* setter */
+	    if ("string" === typeof prm) {
+                prm = new Text(prm);
+	    }
+            /* set click event */
+            let clk = (c1,c2,c3) => {
+                try { c3.folding(!c3.folding()); } catch (e) {
+		    console.error(e.stack);
+                    throw e;
+	        }
+	    }
+            prm.event(new Click([clk,this]));
+            this.innerComp("title", prm);
+            if (null !== this.height()) {
+                this.height(this.height());
+	    }
+	} catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
+    /**
+     * contents component
+     *
+     * @param (component) contents component
+     * @return (component) contents component
+     * @type private
+     */
+    contents (prm) {
+        try {
+	    if (undefined !== prm) {
+                prm.option({
+                    style: { "overflow": "hidden" },
+                    effect: [
+                        new efSize({ height: "0rem", tag: "Accordion-Size", eid: 2 }),
+                        new efSize({ tag: "Accordion-Size", eid: 3 })
+                    ]
+                });
+	    }
+            return this.innerComp("contents", prm, mf.Component);
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * height config
+     * 
+     * @param (string (size)) accordion height
+     * @return (string (size)) accordion height
+     * @type parameter
+     */
+    height (prm, opt) {
+        try {
+	    if (undefined === prm) {
+                return super.height();
+	    }
+	    let ttl = this.title();
+	    let hei = null;
+            try {
+	        hei = mf.func.sizeDiff(prm, ttl.height());
+	    } catch (e) {
+                hei = prm;
+	    }
+	    hei = mf.func.getSize(hei);
+	    if (0 > hei.value()) {
+                hei.value(0);
+	    }
+            super.height(hei.toString(), opt);
+	    this.contents().effect({ tag:"Accordion-Size", eid:3 }).height(hei.toString());
+	} catch (e) {
+            console.error(e.stack);
+	    throw e;
+	}
+    }
+    
+    /**
+     * folding accordion and folding status getter
+     * 
+     * @param (boolean) true: folding accordion component
+     *                  false: unfolding accordion component
+     * @return (boolean) folding status
+     * @type function
+     */
+    folding (prm) {
+        try {
+            if (undefined === prm) {
+                /* getter */
+		return this.member("folding", "boolean", prm, false);
+	    }
+	    /* setter */
+	    let chg_sts = false;
+            if ( (true === prm) && (false === this.folding()) ) {
+                this.contents().execEffect(2);
+		chg_sts = true;
+	    } else if ( (false === prm) && (true === this.folding()) ) {
+		this.contents().execEffect(3);
+		chg_sts = true
+	    }
+            this.member("folding", "boolean", prm);
+	    if (true === chg_sts) {
+                let evt = this.changeEvent();
+		for (let eidx in evt) {
+                    evt[eidx][0](this, this.folding(), evt[eidx][1]);
+		}
+	    }
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * folding speed
+     * 
+     * @param (number) folding speed
+     * @return (number) folding speed
+     * @type parameter
+     */
+    speed (prm) {
+        try {
+            let ef_siz = this.contents().effect({ tag: "Accordion-Size" });
+            if (undefined === prm) {
+                /* getter */
+		return ef_siz[0].speed();
+	    }
+	    /* setter */
+            for (let idx in ef_siz) {
+                ef_siz[idx].speed(prm);
+	    }
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
     /**
      * change event function setter/getter
      *
-     * @param p1 (function) change event function
-     * @param p1 (undefined) call as getter
-     * @param p2 (mixed) function parameter
-     * @return (array) [function, parameter]
+     * @param (function) change event function
+     * @param (mixed) function parameter
+     * @return (array) [[function, parameter],..]
+     * @type parameter
      */
     changeEvent (fnc, prm) {
         try {
-            if ( (undefined !== fnc) && ('function' === typeof fnc) ) {
+            if ( (undefined !== fnc) && ('function' !== typeof fnc) ) {
                 throw new Error('invalid parameter');
             }
             return this.arrayMember(
                 'changeEvent',
                 'array',
-                (undefined === prm) ? undefined : [fnc, prm]
+                (undefined === fnc) ? undefined : [fnc, prm]
             );
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * open status setter/getter
-     *
-     * @param p1 (boolean) set open status
-     * @param p1 (undefined) call as getter
-     * @return (boolean) open status
-     */
-    isOpen (prm) {
-        try {
-            let ret = this.member('isOpen', 'boolean', prm, true);
-            if (undefined !== prm) {
-                /* execute change event */
-                let evt = this.changeEvent();
-                for (let eidx in evt) {
-                    evt[eidx][0](this, prm, evt[eidx][1]);
-                }
-            }
         } catch (e) {
             console.error(e.stack);
             throw e;

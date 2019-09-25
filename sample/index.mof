@@ -1,0 +1,8 @@
+<require>
+    <tag module="mofron-comp-accordion">Accordion</tag>
+    <tag module="mofron-comp-text">Text</tag>
+</require>
+
+<Accordion speed=500 title="accordion">
+    <Text>test accordion</Text>
+</Accordion>
