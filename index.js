@@ -4,7 +4,7 @@
  * @author simpart
  */
 const mf     = require('mofron');
-const Text   = require('mofron-comp-clktext');
+const Text   = require('mofron-comp-text');
 const Switch = require('mofron-comp-clksw');
 const Click  = require('mofron-event-click');
 const efSize = require('mofron-effect-size');
@@ -76,7 +76,11 @@ mf.comp.Accordion = class extends mf.Component {
 	        }
 	    }
             prm.event(new Click([clk,this]));
-            this.innerComp("title", prm);
+	    let wrp = new mf.Component({
+	                  style: { "display" : "flex" },
+                          child: prm
+	              });
+            this.innerComp("title", wrp);
             if (null !== this.height()) {
                 this.height(this.height());
 	    }
@@ -97,7 +101,7 @@ mf.comp.Accordion = class extends mf.Component {
         try {
 	    if (undefined !== prm) {
                 prm.option({
-                    style: { "overflow": "hidden" },
+                    style: { "overflow": "scroll" },
                     effect: [
                         new efSize({ height: "0rem", tag: "Accordion-Size", eid: 2 }),
                         new efSize({ tag: "Accordion-Size", eid: 3 })
@@ -217,7 +221,7 @@ mf.comp.Accordion = class extends mf.Component {
             }
             return this.arrayMember(
                 'changeEvent',
-                'array',
+                'object',
                 (undefined === fnc) ? undefined : [fnc, prm]
             );
         } catch (e) {
