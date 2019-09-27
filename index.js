@@ -44,13 +44,14 @@ mf.comp.Accordion = class extends mf.Component {
             this.target(this.contents().target());
             this.styleTgt(this.target());
             
-	    this.height("2rem");
+	    /* set default height */
+	    this.contents().effect({ tag:"Accordion-Size", eid:3 }).height(null);
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
-    
+
     /**
      * accordion title
      * 
@@ -125,7 +126,14 @@ mf.comp.Accordion = class extends mf.Component {
     height (prm, opt) {
         try {
 	    if (undefined === prm) {
+	        /* getter */
                 return super.height();
+	    }
+	    /* setter */
+            if (null === prm) {
+                super.height(prm, opt);
+                this.contents().effect({ tag:"Accordion-Size", eid:3 }).height(prm);
+		return;
 	    }
 	    let ttl = this.title();
 	    let hei = null;
