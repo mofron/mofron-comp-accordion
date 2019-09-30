@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-accordion",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "accordion component for mofron",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,11 @@
     "url": "git+https://github.com/mofron/mofron-comp-accordion.git"
   },
   "dependencies": {
+    "mofron-comp-text" : "",
+    "mofron-comp-clksw" : "",
+    "mofron-event-click" : "",
+    "mofron-effect-size" : "",
+    "mofron-effect-synchei" : ""
   },
   "keywords": [
     "front-end"
