@@ -3,11 +3,12 @@
  * @brief  accordion component for mofron
  * @author simpart
  */
-const mf     = require('mofron');
-const Text   = require('mofron-comp-text');
-const Switch = require('mofron-comp-clksw');
-const Click  = require('mofron-event-click');
-const efSize = require('mofron-effect-size');
+const mf      = require('mofron');
+const Text    = require('mofron-comp-text');
+const Switch  = require('mofron-comp-clksw');
+const Click   = require('mofron-event-click');
+const efSize  = require('mofron-effect-size');
+const SyncHei = require('mofron-effect-synchei');
 
 mf.comp.Accordion = class extends mf.Component {
     /**
@@ -51,6 +52,32 @@ mf.comp.Accordion = class extends mf.Component {
             throw e;
         }
     }
+    
+    /**
+     * set default height
+     * 
+     * @type private
+     */
+    beforeRender () {
+        try {
+            super.beforeRender();
+
+	    if (undefined === this.option().height) {
+	        let chd = this.child();
+	        if (0 < chd.length) {
+		    let hei = null;
+                    for (let cidx in chd) {
+                        hei = mf.func.sizeSum(hei, chd[cidx].height());
+		    }
+		    hei = mf.func.sizeSum(hei, this.title().height());
+		    this.height(hei);
+		}
+	    }
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
 
     /**
      * accordion title
@@ -78,13 +105,10 @@ mf.comp.Accordion = class extends mf.Component {
 	    }
             prm.event(new Click([clk,this]));
 	    let wrp = new mf.Component({
-	                  style: { "display" : "flex" },
-                          child: prm
+	                  style: { "display" : "flex" }, height: prm.height(),
+                          child: prm, effect: new SyncHei(prm),
 	              });
             this.innerComp("title", wrp);
-            if (null !== this.height()) {
-                this.height(this.height());
-	    }
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -127,7 +151,10 @@ mf.comp.Accordion = class extends mf.Component {
         try {
 	    if (undefined === prm) {
 	        /* getter */
-                return super.height();
+		return mf.func.sizeSum(
+		    this.title().height(),
+		    (true === this.folding()) ? null : super.height()
+		);
 	    }
 	    /* setter */
             if (null === prm) {
@@ -135,10 +162,9 @@ mf.comp.Accordion = class extends mf.Component {
                 this.contents().effect({ tag:"Accordion-Size", eid:3 }).height(prm);
 		return;
 	    }
-	    let ttl = this.title();
 	    let hei = null;
             try {
-	        hei = mf.func.sizeDiff(prm, ttl.height());
+	        hei = mf.func.sizeDiff(prm, this.title().height());
 	    } catch (e) {
                 hei = prm;
 	    }
@@ -146,7 +172,7 @@ mf.comp.Accordion = class extends mf.Component {
 	    if (0 > hei.value()) {
                 hei.value(0);
 	    }
-            super.height(hei.toString(), opt);
+            super.height(hei.toString());
 	    this.contents().effect({ tag:"Accordion-Size", eid:3 }).height(hei.toString());
 	} catch (e) {
             console.error(e.stack);

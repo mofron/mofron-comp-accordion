@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-accordion",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "accordion component for mofron",
   "main": "index.js",
   "scripts": {
