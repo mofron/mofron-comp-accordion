@@ -1,30 +1,37 @@
 /**
  * @file   mofron-comp-accordion/index.js
  * @brief  accordion component for mofron
- * @attention it needs to height parameter for enabling animation.
- * @author simpart
+ * @attention it needs to height parameter for enabling animation speed.
+ * @license MIT
  */
-const mf      = require('mofron');
-const Text    = require('mofron-comp-clktext');
-const Click   = require('mofron-event-click');
-const efSize  = require('mofron-effect-size');
-const SyncHei = require('mofron-effect-synchei');
+const Text  = require('mofron-comp-text');
+const Click = require('mofron-event-click');
+const efStyle = require('mofron-effect-style');
+const comutl = mofron.util.common;
+const effutl = mofron.util.effect;
 
-mf.comp.Accordion = class extends mf.Component {
+module.exports = class extends mofron.class.Component {
     /**
      * initialize component
      * 
      * @param (mixed) title parameter
-     *                object: component option
-     * @pmap title
+     *                key-value: component config
+     * @short title
      * @type private
      */
-    constructor (po) {
+    constructor (p1) {
         try {
             super();
             this.name('Accordion');
-            this.prmMap('title');
-            this.prmOpt(po);
+            this.shortForm('title');
+            /* init config */
+	    this.confmng().add("changeEvent", { type: "EventFrame", list: true });
+            this.confmng().add("folding", { type: "boolean", init: false });
+
+	    /* set config */
+	    if (0 < arguments.length) {
+                this.config(p1);
+	    }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -40,8 +47,8 @@ mf.comp.Accordion = class extends mf.Component {
         try {
             super.initDomConts();
             this.child([this.title(), this.contents()]);
-            this.target(this.contents().target());
-	    this.styleTgt(this.target());
+            this.childDom(this.contents().childDom());
+	    this.styleDom(this.childDom());
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -51,23 +58,45 @@ mf.comp.Accordion = class extends mf.Component {
     /**
      * accordion title
      * 
-     * @param (component) title component
+     * @param (mixed) string: title string
+     *                component: title component
      * @return (component) title component
      * @type parameter
      */
     title (prm) {
         try {
-            if (undefined !== prm) {
-                prm = ("string" === typeof prm) ? new Text(prm) : prm;
-		let fld_evt = (fe1,fe2,fe3) => {
-                    try { fe3.folding(!fe3.folding()); } catch (e) {
+	    if ("string" === typeof prm) {
+                prm = new Text(prm);
+	    }
+	    if (true === comutl.isinc(prm, "Component")) {
+	        let acd = this;
+	        let sw_fld = () => {
+                    try {
+			acd.folding(!acd.folding());
+		    } catch (e) {
                         console.error(e.stack);
-			throw e;
+	                throw e;
 		    }
 		}
-                prm.option({ event: new Click([fld_evt,this]) });
+                prm.event(new Click(sw_fld));
 	    }
-            return this.innerComp("title", prm, mf.Component);
+            return this.innerComp("title", prm, mofron.class.Component);
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * same as the title parameter
+     * 
+     * @param (mixed) sama as the title parameter
+     * @return (component) title component
+     * @type parameter
+     */
+    text (prm) {
+        try {
+            return super.title(prm);
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -83,22 +112,22 @@ mf.comp.Accordion = class extends mf.Component {
      */
     contents (prm) {
         try {
-	    if (undefined !== prm) {
-                prm.option({
+	    if (true === comutl.isinc(prm, "Component")) {
+	        prm.config({
                     style: { "overflow": "scroll" },
                     effect: [
-                        new efSize({
-			    height: "0rem", tag: "Accordion-Size",
-			    eid: 2, forced: true
-			}),
-                        new efSize({
-			    height: null, tag: "Accordion-Size",
-			    eid: 3, forced: true
-			})
+                        new efStyle({
+                            style: { height: "0rem" }, speed: 200,
+			    eid: 2, tag: "Accordion-folding"
+                        }),
+                        new efStyle({
+                            style: { height: null }, speed: 200,
+			    eid: 3, tag: "Accordion-folding"
+                        })
                     ]
-                });
-	    }
-            return this.innerComp("contents", prm, mf.Component);
+	        });
+            }
+            return this.innerComp("contents", prm, mofron.class.Component);
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -109,6 +138,7 @@ mf.comp.Accordion = class extends mf.Component {
      * height config
      * 
      * @param (string (size)) accordion height
+     * @param (key-value) style option
      * @return (string (size)) accordion height
      * @type parameter
      */
@@ -116,15 +146,17 @@ mf.comp.Accordion = class extends mf.Component {
         try {
 	    if (undefined === prm) {
                 /* getter */
-		return mf.func.sizeSum(this.title().height(), super.height());
+		return comutl.sizesum(this.title().height(), this.contents().height());
 	    }
 	    /* setter */
-	    let set = mf.func.sizeDiff(prm, this.title().height());
-            this.contents().effectOpt(
-	        { height: set },
-                { tag: "Accordion-Size", eid: 3 }
-	    );
-            super.height(set, opt);
+	    let cnt_hei = comutl.sizesum(prm, "-" + this.title().height());
+	    super.height(cnt_hei, opt);
+            /* set style effect */
+            effutl.setconf(
+	        this.contents(),
+                { name: "Style", tag: "Accordion-folding", eid: 3 },
+		{ style: { height : cnt_hei } }
+            );
 	} catch (e) {
             console.error(e.stack);
 	    throw e;
@@ -137,7 +169,7 @@ mf.comp.Accordion = class extends mf.Component {
      * @param (boolean) true: folding accordion component
      *                  false: unfolding accordion component
      * @return (boolean) folding status
-     * @type function
+     * @type parameter
      */
     folding (prm) {
         try {
@@ -146,10 +178,10 @@ mf.comp.Accordion = class extends mf.Component {
                 this.contents().execEffect((true === prm) ? 2 : 3);
 		let evt = this.changeEvent();
 		for (let eidx in evt) {
-		    evt[eidx][0](this, prm, evt[eidx][1]);
+		    evt.exec(this, prm);
                 }
 	    }
-	    return this.member("folding", "boolean", prm, false);
+	    return this.confmng("folding", prm);
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -159,16 +191,18 @@ mf.comp.Accordion = class extends mf.Component {
     /**
      * folding speed
      * 
-     * @param (number) folding speed
-     * @return (number) folding speed
+     * @param (number) folding speed [ms]
+     * @return (number) folding speed [ms]
      * @type parameter
      */
     speed (prm) {
         try {
-	    return this.contents().effectOpt(
-	        { speed:prm },
-                { tag: "Accordion-Size" }
-	    );
+	    let ret = null;
+	    let eff = this.effect({ tag: "Accordion-folding" });
+	    for (let eidx in eff) {
+                ret = eff[eidx].speed(prm);
+	    }
+	    return ret;
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -176,28 +210,21 @@ mf.comp.Accordion = class extends mf.Component {
     }
 
     /**
-     * change event function setter/getter
+     * change event
+     * handler for change folding
      *
      * @param (function) change event function
      * @param (mixed) function parameter
-     * @return (array) [[function, parameter],..]
+     * @return (array) [EventFrame,..]
      * @type parameter
      */
     changeEvent (fnc, prm) {
         try {
-            if ( (undefined !== fnc) && ('function' !== typeof fnc) ) {
-                throw new Error('invalid parameter');
-            }
-            return this.arrayMember(
-                'changeEvent',
-                'object',
-                (undefined === fnc) ? undefined : [fnc, prm]
-            );
+	    return this.confmng("changeEvent", comutl.get_eframe(fnc,prm));
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
 }
-module.exports = mf.comp.Accordion;
 /* end of file */

@@ -3,6 +3,6 @@
     <tag module="mofron-comp-text">Text</tag>
 </require>
 
-<Accordion speed=500 title="accordion">
-    <Text>test accordion</Text>
+<Accordion speed=500 title="accordion title" height=0.5rem>
+    <Text>accordion contents</Text>
 </Accordion>

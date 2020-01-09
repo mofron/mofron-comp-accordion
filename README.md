@@ -3,6 +3,8 @@
 
  accordion component for mofron
 
+## Attention
+ - it needs to height parameter for enabling animation speed.
 
 # Install
 ```
@@ -16,17 +18,23 @@ npm install mofron   mofron-comp-accordion
     <tag module="mofron-comp-text">Text</tag>
 </require>
 
-<Accordion speed=500 title="accordion">
-    <Text>test accordion</Text>
+<Accordion speed=500 title="accordion title" height=0.5rem>
+    <Text>accordion contents</Text>
 </Accordion>
 ```
+
 # Parameter
 
-|Simple<br>Param | Parameter Name | Type | Description |
-|:--------------:|:---------------|:-----|:------------|
-| ◯  | title | component | title component |
+| Short<br>Form | Parameter Name | Type | Description |
+|:-------------:|:---------------|:-----|:------------|
+| ◯  | title | mixed | string: title string |
+| | | | component: title component |
+| | text | mixed | sama as the title parameter |
 | | height | string (size) | accordion height |
-| | speed | number | folding speed |
+| | | key-value | style option |
+| | folding | boolean | true: folding accordion component |
+| | | | false: unfolding accordion component |
+| | speed | number | folding speed [ms] |
 | | changeEvent | function | change event function |
 | | | mixed | function parameter |
 
